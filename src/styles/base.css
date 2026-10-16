@@ -226,26 +226,9 @@ a:focus-visible {
   background: var(--color-gold);
 }
 
-.hero__ornament {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-top: 2.25rem;
-  color: var(--color-gold);
-}
-
-.hero__ornament-line {
-  width: clamp(2.25rem, 9vw, 5rem);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(212 168 87 / 72%));
-}
-
-.hero__ornament-line:last-child {
-  transform: rotate(180deg);
-}
-
-.hero__ornament-star {
-  font-size: 0.8rem;
+.hero__location {
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  letter-spacing: 0.18em;
 }
 
 .hero__shield-wrap {
