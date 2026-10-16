@@ -368,11 +368,6 @@ p {
   box-shadow: var(--gold-glow);
 }
 
-.button__arrow {
-  font-size: 1rem;
-  line-height: 1;
-}
-
 .hero__signature {
   margin: 1.5rem 0 0;
   color: rgb(245 240 232 / 50%);

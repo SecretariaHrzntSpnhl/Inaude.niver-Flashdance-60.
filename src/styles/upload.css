@@ -112,18 +112,6 @@
   opacity: 0.72;
 }
 
-.upload-icon {
-  display: grid;
-  width: 3.6rem;
-  height: 3.6rem;
-  place-items: center;
-  margin: 0 auto 0.2rem;
-  border: 1px solid var(--color-gold);
-  border-radius: 50%;
-  color: var(--color-gold);
-  font-size: 1.8rem;
-}
-
 .upload-dropzone__title {
   font-family: var(--font-display);
   font-size: clamp(1.25rem, 5vw, 1.8rem);
