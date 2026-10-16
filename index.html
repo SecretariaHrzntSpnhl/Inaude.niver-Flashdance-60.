@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="theme-color"
+      content="#4b0b15"
+    />
+    <meta
+      name="description"
+      content="Uma celebração especial para Inaude Jr. — Colorado desde 1966."
+    />
+    <title>Parabéns, Inaude — Colorado desde 1966</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="site-frame">
+      <header class="site-header">
+        <a class="wordmark" href="#inicio" aria-label="Inaude 60, início">
+          <span class="wordmark__number">60</span>
+          <span class="wordmark__name">Inaude Jr.</span>
+        </a>
+        <a class="header-link" href="/upload.html">Enviar fotos <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main id="inicio">
+        <section class="hero" aria-labelledby="hero-title">
+          <p class="eyebrow"><span class="eyebrow__line"></span> Lages, SC · 2026</p>
+          <div class="hero__ornament" aria-hidden="true">
+            <span class="hero__ornament-line"></span>
+            <span class="hero__ornament-star">✳</span>
+            <span class="hero__ornament-line"></span>
+          </div>
+
+          <div class="hero__shield-wrap" aria-label="Escudo do Sport Club Internacional">
+            <img
+              class="shield-art"
+              src="/escudo-sci.png"
+              alt="Escudo rojo y blanco del Sport Club Internacional"
+              width="664"
+              height="658"
+            />
+          </div>
+
+          <p class="hero__pretitle">Uma vida de histórias. Uma noite para celebrar.</p>
+          <h1 id="hero-title">
+            Parabéns,<br />
+            <span>Inaude</span>
+          </h1>
+          <p class="hero__subtitle">Colorado desde 1966</p>
+          <p class="hero__description">
+            Sessenta anos de paixão, encontros e momentos que merecem ficar para sempre.
+          </p>
+          <a class="button button--gold" href="/upload.html">
+            <span>Enviar fotos e vídeos</span>
+            <span class="button__arrow" aria-hidden="true">↗</span>
+          </a>
+          <p class="hero__signature">Com carinho, para Inaude Jr.</p>
+        </section>
+
+        <section class="carousel-experience" id="album" aria-labelledby="carousel-title">
+          <div class="carousel-shell">
+            <div class="eyebrow carousel-shell__eyebrow">
+              <span class="eyebrow__line"></span>
+              <span id="carousel-title">Álbum virtual</span>
+              <span class="eyebrow__line"></span>
+            </div>
+            <p class="carousel-message" data-carousel-message role="status" aria-live="polite">Carregando as lembranças…</p>
+            <div class="carousel-empty" data-carousel-empty hidden>
+              <span aria-hidden="true">✦</span>
+              <p>As fotos e os vídeos da festa vão aparecer aqui.</p>
+              <p>Envie a primeira lembrança para começar o álbum.</p>
+            </div>
+            <div class="carousel" data-carousel role="region" aria-label="Fotos e vídeos compartilhados da festa" hidden>
+              <div class="carousel__track" data-carousel-track></div>
+              <div class="carousel__controls">
+                <button class="carousel__button" type="button" data-carousel-prev aria-label="Anterior">←</button>
+                <button class="carousel__button" type="button" data-carousel-next aria-label="Próximo">→</button>
+              </div>
+            </div>
+            <div class="carousel__status" data-carousel-status aria-live="polite"></div>
+            <p class="carousel__hint" data-carousel-hint>Deslizá con el dedo para descubrir los momentos</p>
+          </div>
+          <div class="carousel-overlay" aria-labelledby="contribute-title">
+            <p class="eyebrow">O álbum é nosso</p>
+            <h2 id="contribute-title">Compartilhe suas lembranças e vamos criar juntos o álbum desta festa.</h2>
+            <p class="carousel-overlay__description">Adicione uma foto ou vídeo.</p>
+            <a class="button button--silver" href="/upload.html">Enviar fotos e vídeos <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section class="celebration" id="celebrar" aria-labelledby="celebration-title">
+          <div class="celebration__rule" aria-hidden="true"></div>
+          <p class="eyebrow">Uma data inesquecível</p>
+          <h2 id="celebration-title">Uma vida colorada.<br /><em>Uma festa para recordar.</em></h2>
+          <p>
+            Este espaço foi criado para celebrar os 60 anos de Inaude Jr. e guardar,
+            juntos, as lembranças de uma noite muito especial.
+          </p>
+          <div class="celebration__year-counter" role="img" aria-label="Contagem animada dos anos desde 1966">
+            <span class="celebration__year-label">Uma viagem no tempo</span>
+            <span class="celebration__year-value" data-year-counter aria-hidden="true">1966</span>
+          </div>
+        </section>
+      </main>
+
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

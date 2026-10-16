@@ -1,0 +1,107 @@
+.particle-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.entry-animate {
+  animation-duration: 900ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.entry-flash {
+  animation-name: flashEntry;
+}
+
+.entry-vinyl {
+  animation-name: vinylEntry;
+}
+
+.entry-curtain {
+  animation-name: curtainEntry;
+}
+
+.entry-sparkle {
+  animation-name: sparkleEntry;
+}
+
+.entry-waves {
+  animation-name: wavesEntry;
+}
+
+.entry-zoom {
+  animation-name: zoomEntry;
+}
+
+.entry-slide3d {
+  animation-name: slide3dEntry;
+}
+
+.entry-mosaic {
+  animation-name: mosaicEntry;
+}
+
+.entry-mirror {
+  animation-name: mirrorEntry;
+}
+
+.entry-glow {
+  animation-name: glowEntry;
+}
+
+@keyframes flashEntry {
+  0% { filter: brightness(2) saturate(1.8) blur(0px); opacity: 0; transform: scale(0.96); }
+  28% { opacity: 1; }
+  100% { filter: brightness(1) saturate(1); opacity: 1; transform: scale(1); }
+}
+
+@keyframes vinylEntry {
+  0% { opacity: 0; transform: rotate(-360deg) scale(0.75); }
+  100% { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+
+@keyframes curtainEntry {
+  0% { clip-path: inset(0 0 100% 0 round 16px); opacity: 0; }
+  100% { clip-path: inset(0 0 0 0 round 16px); opacity: 1; }
+}
+
+@keyframes sparkleEntry {
+  0% { opacity: 0; transform: scale(0.6); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+  35% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 18px rgba(212,168,87,0.5)); }
+}
+
+@keyframes wavesEntry {
+  0% { opacity: 0; transform: scale(1.08); filter: blur(8px); }
+  40% { opacity: 1; filter: blur(2px); }
+  100% { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@keyframes zoomEntry {
+  0% { opacity: 0; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide3dEntry {
+  0% { opacity: 0; transform: perspective(1200px) rotateY(-26deg) translateX(-30px) scale(0.92); }
+  100% { opacity: 1; transform: perspective(1200px) rotateY(0deg) translateX(0) scale(1); }
+}
+
+@keyframes mosaicEntry {
+  0% { opacity: 0; clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%); }
+  100% { opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@keyframes mirrorEntry {
+  0% { opacity: 0; transform: scaleX(0.4); filter: blur(6px); }
+  100% { opacity: 1; transform: scaleX(1); filter: blur(0); }
+}
+
+@keyframes glowEntry {
+  0% { opacity: 0; box-shadow: 0 0 0 rgba(212,168,87,0); }
+  35% { opacity: 1; }
+  100% { opacity: 1; box-shadow: 0 0 26px rgba(212,168,87,0.45); }
+}

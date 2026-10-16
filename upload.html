@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Suba seu momento para o álbum de Inaude." />
+    <title>Subir meu momento | Parabéns, Inaude</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="site-frame">
+      <header class="site-header">
+        <a class="wordmark" href="/" aria-label="Voltar para a página inicial">
+          <span class="wordmark__number">60</span>
+          <span class="wordmark__name">Inaude Jr.</span>
+        </a>
+        <a class="header-link" href="/galeria.html">Ver álbum <span aria-hidden="true">↗</span></a>
+      </header>
+
+      <main>
+        <section class="upload-shell">
+          <div class="upload-intro">
+            <p class="eyebrow">Fotos e vídeos da festa</p>
+            <h1>Vamos criar esse álbum juntos.</h1>
+            <p>Escolha fotos ou vídeos do celular e envie para o álbum de todos.</p>
+          </div>
+          <div class="upload-card">
+            <section class="upload-success" data-upload-success hidden aria-labelledby="upload-success-title">
+              <span class="upload-success__icon" aria-hidden="true">✦</span>
+              <h2 id="upload-success-title">Parabéns por colaborar com o álbum!</h2>
+              <p data-upload-success-message></p>
+              <p class="upload-success__return">Você já pode continuar vendo as lembranças no carrossel.</p>
+              <a class="button button--gold upload-success__link" data-upload-success-link href="/#album">Voltar ao carrossel</a>
+            </section>
+            <button class="upload-dropzone" data-upload-zone type="button">
+              <span class="upload-icon" aria-hidden="true">✦</span>
+              <span class="upload-dropzone__title" data-upload-label>Escolher fotos e vídeos</span>
+              <span class="upload-dropzone__hint">Toque aqui. Você pode escolher mais de um.</span>
+            </button>
+            <input
+              class="upload-file-input"
+              data-upload-input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
+              multiple
+              aria-label="Escolher fotos e vídeos"
+            />
+
+            <form class="upload-form" data-upload-form>
+              <div class="upload-field">
+                <label for="author">Seu nome <span>(opcional)</span></label>
+                <input id="author" name="author" type="text" placeholder="Nome ou apelido" maxlength="40" autocomplete="name" />
+              </div>
+
+              <div class="upload-file-list" data-upload-files aria-live="polite"></div>
+
+              <label class="upload-consent">
+                <input name="consent" type="checkbox" required />
+                <span>Autorizo compartilhar estas imagens no álbum. Tenho permissão das pessoas que aparecem.</span>
+              </label>
+              <div class="upload-actions">
+                <button class="upload-button upload-button--primary" data-upload-submit type="submit" disabled>Enviar ao álbum</button>
+              </div>
+
+              <p class="upload-status" data-upload-status role="status" aria-live="polite"></p>
+            </form>
+            <p class="upload-privacy-note">O álbum pode ser visto por quem tiver acesso ao link.</p>
+          </div>
+        </section>
+      </main>
+
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

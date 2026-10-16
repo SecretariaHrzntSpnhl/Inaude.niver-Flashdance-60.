@@ -1,0 +1,15 @@
+import "./styles/variables.css";
+import "./styles/base.css";
+import "./styles/bolas-disco.css";
+import "./styles/carrusel.css";
+import "./styles/efectos.css";
+import "./styles/upload.css";
+import "./styles/galeria.css";
+import "./js/bolasDisco.js";
+import "./js/carrusel.js";
+import "./js/particulas.js";
+import "./js/efectos.js";
+import "./js/upload.js";
+import "./js/galeria.js";
+import "./js/audio.js";
+import "./js/yearCounter.js";

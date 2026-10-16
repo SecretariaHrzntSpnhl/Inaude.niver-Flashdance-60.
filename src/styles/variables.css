@@ -1,0 +1,24 @@
+:root {
+  color-scheme: dark;
+  font-family: "DM Sans", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --color-red: #e5050f;
+  --color-burgundy: #6b0f1a;
+  --color-burgundy-mid: #8b0a1a;
+  --color-burgundy-deep: #3d0911;
+  --color-gold: #d4a857;
+  --color-silver: #c9c9c9;
+  --color-cream: #f5f0e8;
+  --color-hedge: #2a3b2a;
+  --color-black: #1a1010;
+  --color-ink-on-dark: #f5f0e8;
+
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "DM Sans", Arial, sans-serif;
+
+  --page-gutter: clamp(1.25rem, 5vw, 5rem);
+  --frame-inset: clamp(0.65rem, 1.7vw, 1.5rem);
+  --gold-glow: 0 0 1.1rem rgb(212 168 87 / 28%);
+}

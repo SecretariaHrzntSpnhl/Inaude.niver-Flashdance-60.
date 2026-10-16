@@ -1,0 +1,225 @@
+.disco-balls {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  opacity: var(--scroll-opacity, 1);
+  transform:
+    translate3d(0, var(--scroll-shift, 0px), 0)
+    scale(var(--scroll-scale, 1));
+  filter: blur(var(--scroll-blur, 0px));
+  pointer-events: none;
+  transition: opacity 80ms linear, filter 80ms linear;
+  will-change: opacity, transform, filter;
+}
+
+.disco-ball {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  display: block;
+  width: var(--size);
+  aspect-ratio: 1;
+  animation: discoFloat var(--duration) ease-in-out infinite alternate;
+  filter: drop-shadow(8px 14px 12px rgba(0, 0, 0, 0.56))
+    drop-shadow(0 0 12px rgba(212, 168, 87, 0.18));
+  perspective: 500px;
+  transform: translate3d(
+    calc(var(--pointer-x, 0px) * var(--parallax)),
+    calc(var(--pointer-y, 0px) * var(--parallax)),
+    0
+  );
+}
+
+.disco-ball__cord {
+  position: absolute;
+  bottom: 88%;
+  left: 50%;
+  width: 1px;
+  height: 48%;
+  background: linear-gradient(90deg, #5a4524, #fff0c1 48%, #9b783c);
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.58), 0 0 5px rgba(255, 232, 174, 0.5);
+  transform: translateX(-50%);
+}
+
+.disco-ball__sphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 50%;
+  transform: rotateX(9deg) rotateY(-11deg);
+  transform-style: preserve-3d;
+  background-color: #a9aaad;
+  background-image:
+    radial-gradient(ellipse at 30% 22%, rgba(255, 255, 255, 0.96), transparent 31%),
+    radial-gradient(ellipse at 76% 39%, var(--disco-tint, transparent), transparent 50%),
+    linear-gradient(145deg, transparent 34%, rgba(255, 255, 255, 0.36) 43%, transparent 52%),
+    radial-gradient(ellipse at 70% 78%, rgba(0, 0, 0, 0.78), transparent 58%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 19px,
+      rgba(20, 22, 25, 0.86) 19px 20px,
+      rgba(255, 255, 255, 0.88) 20px 21px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 19px,
+      rgba(20, 22, 25, 0.86) 19px 20px,
+      rgba(255, 255, 255, 0.88) 20px 21px
+    ),
+    repeating-conic-gradient(
+      from 0deg,
+      #f9fafb 0% 25%,
+      #777b80 0% 50%,
+      #d9dcdf 0% 75%,
+      #62666b 0%
+    );
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    22px 22px;
+  box-shadow:
+    inset -22px -25px 34px rgba(0, 0, 0, 0.82),
+    inset 11px 8px 18px rgba(255, 255, 255, 0.92),
+    inset 0 0 0 2px rgba(36, 39, 43, 0.58),
+    0 10px 18px rgba(0, 0, 0, 0.48),
+    0 0 13px rgba(255, 255, 255, 0.42),
+    0 0 36px rgba(212, 168, 87, 0.24);
+  animation: discoTurn 18s linear infinite;
+}
+
+.disco-ball__sphere::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 29% 24%, rgba(255, 255, 255, 0.98), transparent 11%),
+    radial-gradient(ellipse at 24% 30%, rgba(255, 255, 255, 0.36), transparent 31%),
+    linear-gradient(115deg, transparent 29%, rgba(255, 255, 255, 0.56) 37%, transparent 47%);
+  content: "";
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.disco-ball__sphere::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 50% 112%, rgba(0, 0, 0, 0.72), transparent 62%),
+    radial-gradient(ellipse at 50% -12%, rgba(255, 255, 255, 0.34), transparent 50%);
+  box-shadow:
+    inset 0 -8px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 5px rgba(255, 255, 255, 0.45);
+  content: "";
+  pointer-events: none;
+}
+
+.disco-ball--gold .disco-ball__sphere {
+  --disco-tint: rgba(212, 168, 87, 0.78);
+}
+
+.disco-ball--red .disco-ball__sphere {
+  --disco-tint: rgba(229, 5, 15, 0.7);
+}
+
+@keyframes discoFloat {
+  from {
+    translate: 0 -8px;
+  }
+  to {
+    translate: 0 8px;
+  }
+}
+
+@keyframes discoTurn {
+  from {
+    background-position:
+      center,
+      center,
+      center,
+      center,
+      center,
+      center,
+      0 0;
+  }
+  to {
+    background-position:
+      center,
+      center,
+      center,
+      center,
+      center,
+      center,
+      22px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disco-ball,
+  .disco-ball__sphere {
+    animation: none;
+  }
+
+  .disco-balls {
+    transition: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .disco-ball {
+    width: clamp(58px, 18vw, 82px);
+    opacity: 0.76;
+  }
+
+  .disco-ball:nth-child(1) {
+    top: 14%;
+    left: 0;
+  }
+
+  .disco-ball:nth-child(2) {
+    top: 19%;
+    right: 0;
+    left: auto;
+  }
+
+  .disco-ball:nth-child(3),
+  .disco-ball:nth-child(4),
+  .disco-ball:nth-child(5) {
+    width: clamp(30px, 9vw, 40px);
+    opacity: 0.68;
+  }
+
+  .disco-ball:nth-child(3) {
+    top: 36%;
+    left: 2%;
+  }
+
+  .disco-ball:nth-child(4) {
+    top: 51%;
+    right: 2%;
+    left: auto;
+  }
+
+  .disco-ball:nth-child(5) {
+    top: 69%;
+    left: 3%;
+  }
+
+  .disco-ball__sphere {
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      14px 14px;
+  }
+}
