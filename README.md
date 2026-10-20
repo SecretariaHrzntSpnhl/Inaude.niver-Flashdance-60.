@@ -30,7 +30,7 @@ O envio aceita até 10 arquivos por vez: JPG, PNG, WebP, GIF, HEIC/HEIF, MP4, MO
 
 O `netlify.toml` publica a pasta `dist` e executa `npm run build`. O build gera as três páginas (`index.html`, `upload.html` e `galeria.html`); não há reescrita geral para a página inicial, para que os endereços das páginas estáticas funcionem diretamente.
 
-No Netlify, configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` em **Site configuration → Environment variables** e faça um novo deploy. Essas variáveis são incorporadas ao frontend durante o build. Sem elas, a página informa que o álbum não está conectado e não envia arquivos.
+O `netlify.toml` configura a URL do projeto e a chave publicável/anon do Supabase para o build hospedado, sem depender do `.env.local` da máquina. Essas credenciais públicas são incorporadas ao frontend; nunca use nem publique uma chave `service_role`. Se definir variáveis de ambiente no painel do Netlify, elas podem substituir os valores do arquivo.
 
 ## Build de produção
 
