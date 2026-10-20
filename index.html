@@ -78,6 +78,25 @@
                 <button class="carousel__button" type="button" data-carousel-prev aria-label="Anterior">←</button>
                 <button class="carousel__button" type="button" data-carousel-next aria-label="Próximo">→</button>
               </div>
+              <section class="cinema-player" data-cinema-player aria-labelledby="cinema-title" aria-label="Reprodutor de vídeo" hidden>
+                <div class="cinema-player__stage" data-cinema-stage>
+                  <div class="cinema-player__light" aria-hidden="true"></div>
+                  <button class="cinema-player__close" type="button" data-cinema-close aria-label="Fechar vídeo">×</button>
+                  <div class="cinema-player__heading">
+                    <span class="cinema-player__badge"><span aria-hidden="true"></span> MEMÓRIA DO ÁLBUM</span>
+                    <h2 id="cinema-title" data-cinema-title>Uma lembrança da festa</h2>
+                  </div>
+                  <video class="cinema-player__video" data-cinema-video playsinline preload="none" aria-label="Vídeo do álbum"></video>
+                  <div class="cinema-player__controls" aria-label="Controles do vídeo">
+                    <button class="cinema-player__control" type="button" data-cinema-toggle aria-label="Reproduzir vídeo">▶</button>
+                    <span class="cinema-player__time" data-cinema-current>0:00</span>
+                    <input class="cinema-player__seek" data-cinema-seek type="range" min="0" max="1000" value="0" aria-label="Posição do vídeo" />
+                    <span class="cinema-player__time" data-cinema-duration>0:00</span>
+                    <button class="cinema-player__control cinema-player__sound" type="button" data-cinema-mute aria-label="Silenciar vídeo">♫</button>
+                  </div>
+                  <p class="cinema-player__status" data-cinema-status role="status" aria-live="polite"></p>
+                </div>
+              </section>
             </div>
             <div class="carousel__status" data-carousel-status aria-live="polite"></div>
             <p class="carousel__hint" data-carousel-hint>Deslizá con el dedo para descubrir los momentos</p>

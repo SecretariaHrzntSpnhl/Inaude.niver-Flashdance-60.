@@ -59,6 +59,34 @@ describe('live infinite album carousel', () => {
     expect(styles).toContain('.slide.is-arriving[data-transition="silver"]');
     expect(styles).toContain('.slide.is-arriving[data-transition="warm"]');
   });
+
+  it('opens uploaded album videos in an accessible cinematic player', async () => {
+    const html = await readProjectFile('index.html');
+    const script = await readProjectFile('src/js/carrusel.js');
+    const styles = await readProjectFile('src/styles/carrusel.css');
+
+    expect(html).toMatch(/data-carousel[\s\S]*data-cinema-player/);
+    expect(html).toContain('data-cinema-player');
+    expect(html).toContain('MEMÓRIA DO ÁLBUM');
+    expect(html).toContain('data-cinema-seek');
+    expect(html).toContain('data-cinema-mute');
+    expect(script).toContain("carousel.classList.add('is-cinema-open')");
+    expect(script).toContain("carousel.classList.remove('is-cinema-open')");
+    expect(script).toContain("carouselShell?.classList.add('is-cinema-open')");
+    expect(script).toContain("track.setAttribute('aria-hidden', 'true')");
+    expect(script).toContain('track.inert = true');
+    expect(script).toContain('video, [data-cinema-player]');
+    expect(script).toContain('cinemaVideo.src = video.currentSrc || video.src');
+    expect(script).toContain('cinemaPlayer.hidden = false');
+    expect(script).toContain('cinemaPlayer.hidden = true');
+    expect(script).toContain("event.code === 'Space'");
+    expect(script).toContain('document.hidden || activeVideo');
+    expect(styles).toContain('.cinema-player[hidden]');
+    expect(styles).toContain('.carousel.is-cinema-open .carousel__track');
+    expect(styles).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(`${html}${script}`).not.toMatch(/EN VIVO|AO VIVO/i);
+    expect(styles).toContain('.cinema-player__stage');
+  });
 });
 
 describe('Netlify deployment', () => {

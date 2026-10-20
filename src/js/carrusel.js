@@ -52,6 +52,11 @@ const createSlide = (item, index) => {
     video.setAttribute('aria-label', item.author ? `Vídeo compartilhado por ${item.author}` : 'Vídeo compartilhado');
     media.append(video);
 
+    const videoBadge = document.createElement('span');
+    videoBadge.className = 'slide__video-badge';
+    videoBadge.innerHTML = '<span aria-hidden="true"></span> VÍDEO DO ÁLBUM';
+    media.append(videoBadge);
+
     const playButton = document.createElement('button');
     playButton.className = 'slide__video-play';
     playButton.type = 'button';
@@ -130,10 +135,21 @@ const mountCarousel = async () => {
   const track = carousel.querySelector('[data-carousel-track]');
   if (!(track instanceof HTMLElement)) return;
 
+  const carouselShell = carousel.parentElement;
   const dots = carousel.parentElement?.querySelector('[data-carousel-status]');
   const nextButton = carousel.querySelector('[data-carousel-next]');
   const prevButton = carousel.querySelector('[data-carousel-prev]');
   const hint = carousel.parentElement?.querySelector('[data-carousel-hint]');
+  const cinemaPlayer = carousel.querySelector('[data-cinema-player]');
+  const cinemaVideo = cinemaPlayer?.querySelector('[data-cinema-video]');
+  const cinemaTitle = cinemaPlayer?.querySelector('[data-cinema-title]');
+  const cinemaToggle = cinemaPlayer?.querySelector('[data-cinema-toggle]');
+  const cinemaMute = cinemaPlayer?.querySelector('[data-cinema-mute]');
+  const cinemaSeek = cinemaPlayer?.querySelector('[data-cinema-seek]');
+  const cinemaCurrent = cinemaPlayer?.querySelector('[data-cinema-current]');
+  const cinemaDuration = cinemaPlayer?.querySelector('[data-cinema-duration]');
+  const cinemaStatus = cinemaPlayer?.querySelector('[data-cinema-status]');
+  const cinemaClose = cinemaPlayer?.querySelector('[data-cinema-close]');
   const uploadParams = new URLSearchParams(window.location.search);
   const uploadedItemName = uploadParams.get('album-item');
 
@@ -184,7 +200,6 @@ const mountCarousel = async () => {
   const carouselMessageState = message.dataset.state;
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let videos = [...track.querySelectorAll('video')];
   let offset = 0;
   let lastFrame = 0;
   let dragging = false;
@@ -194,6 +209,7 @@ const mountCarousel = async () => {
   let resumeTimer = 0;
   let pageTurnTimer = 0;
   let activeVideo = null;
+  let activePlayButton = null;
   let lastRenderedIndex = -1;
   let lastTransition = '';
   let refreshRunning = false;
@@ -265,31 +281,19 @@ const mountCarousel = async () => {
     activeVideo = null;
   };
 
-  const finishVideo = (video) => {
-    if (activeVideo !== video) return;
-    video.controls = false;
-    video.parentElement?.classList.remove('is-playing');
-    const playButton = video.parentElement?.querySelector('[data-video-play]');
-    if (playButton instanceof HTMLButtonElement) playButton.hidden = false;
-    activeVideo = null;
-    paused = reducedMotion.matches || originalSlides.length < 2;
+  const formatTime = (seconds) => {
+    if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainder = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${remainder}`;
   };
 
-  const failVideo = (video, error) => {
-    if (activeVideo !== video) return;
-    finishVideo(video);
-    message.textContent = `Não foi possível reproduzir este vídeo. ${error}`;
-    message.dataset.state = 'error';
+  const updateCinemaPlaybackControl = () => {
+    if (!(cinemaVideo instanceof HTMLVideoElement) || !(cinemaToggle instanceof HTMLButtonElement)) return;
+    const playing = !cinemaVideo.paused && !cinemaVideo.ended;
+    cinemaToggle.textContent = playing ? 'Ⅱ' : '▶';
+    cinemaToggle.setAttribute('aria-label', playing ? 'Pausar vídeo' : 'Reproduzir vídeo');
   };
-
-  const bindVideoEvents = () => {
-    videos = [...track.querySelectorAll('video')];
-    videos.forEach((video) => {
-      video.addEventListener('ended', () => finishVideo(video));
-      video.addEventListener('error', () => failVideo(video, 'Toque no botão para tentar novamente.'));
-    });
-  };
-  bindVideoEvents();
 
   const centerSlide = (index) => {
     const slideWidth = getSlideWidth();
@@ -300,7 +304,7 @@ const mountCarousel = async () => {
   };
 
   const refreshAlbum = async () => {
-    if (!isAlbumConfigured || refreshRunning || document.hidden) return;
+    if (!isAlbumConfigured || refreshRunning || document.hidden || activeVideo) return;
     refreshRunning = true;
     try {
       const latestSlides = await listAlbumItems(Number.POSITIVE_INFINITY);
@@ -371,7 +375,6 @@ const mountCarousel = async () => {
             ? currentKeyIndex
             : 0
       );
-      bindVideoEvents();
       render();
     } catch (error) {
       message.textContent = `Não foi possível atualizar as lembranças. ${
@@ -383,6 +386,169 @@ const mountCarousel = async () => {
     }
   };
 
+  const openCinema = (video, playButton) => {
+    if (
+      !(cinemaPlayer instanceof HTMLElement) ||
+      !(cinemaVideo instanceof HTMLVideoElement) ||
+      !(cinemaTitle instanceof HTMLElement) ||
+      !(cinemaStatus instanceof HTMLElement) ||
+      !(cinemaSeek instanceof HTMLInputElement) ||
+      !(cinemaCurrent instanceof HTMLElement) ||
+      !(cinemaDuration instanceof HTMLElement)
+    ) {
+      message.textContent = 'O reprodutor de vídeo não está disponível neste momento.';
+      message.dataset.state = 'error';
+      return;
+    }
+
+    stopActiveVideo();
+    activeVideo = video;
+    activePlayButton = playButton;
+    paused = true;
+    window.clearTimeout(resumeTimer);
+    window.clearTimeout(pageTurnTimer);
+    message.textContent = carouselMessage;
+    message.dataset.state = carouselMessageState;
+    cinemaTitle.textContent =
+      video.closest('.slide')?.querySelector('.slide__title')?.textContent?.trim() || 'Uma lembrança da festa';
+    cinemaStatus.textContent = '';
+    cinemaVideo.src = video.currentSrc || video.src;
+    cinemaVideo.currentTime = 0;
+    cinemaVideo.muted = false;
+    cinemaSeek.value = '0';
+    cinemaCurrent.textContent = '0:00';
+    cinemaDuration.textContent = '0:00';
+    if (cinemaMute instanceof HTMLButtonElement) {
+      cinemaMute.textContent = '♫';
+      cinemaMute.setAttribute('aria-label', 'Silenciar vídeo');
+    }
+    cinemaPlayer.hidden = false;
+    carousel.classList.add('is-cinema-open');
+    carouselShell?.classList.add('is-cinema-open');
+    track.inert = true;
+    track.setAttribute('aria-hidden', 'true');
+    if (dots instanceof HTMLElement) dots.inert = true;
+    if (nextButton instanceof HTMLButtonElement) nextButton.disabled = true;
+    if (prevButton instanceof HTMLButtonElement) prevButton.disabled = true;
+    cinemaClose?.focus({ preventScroll: true });
+    carousel.scrollLeft = 0;
+
+    cinemaVideo.play().then(updateCinemaPlaybackControl).catch((error) => {
+      cinemaStatus.textContent = 'Toque em reproduzir para iniciar o vídeo.';
+      updateCinemaPlaybackControl();
+      if (error instanceof Error && error.name !== 'NotAllowedError') {
+        cinemaStatus.textContent = `Não foi possível reproduzir o vídeo. ${error.message}`;
+      }
+    });
+  };
+
+  const closeCinema = () => {
+    if (!(cinemaPlayer instanceof HTMLElement) || cinemaPlayer.hidden) return;
+    if (cinemaVideo instanceof HTMLVideoElement) {
+      cinemaVideo.pause();
+      cinemaVideo.removeAttribute('src');
+      cinemaVideo.load();
+    }
+    cinemaPlayer.hidden = true;
+    carousel.classList.remove('is-cinema-open');
+    carouselShell?.classList.remove('is-cinema-open');
+    track.inert = false;
+    track.removeAttribute('aria-hidden');
+    if (dots instanceof HTMLElement) dots.inert = false;
+    if (nextButton instanceof HTMLButtonElement) nextButton.disabled = originalSlides.length < 2;
+    if (prevButton instanceof HTMLButtonElement) prevButton.disabled = originalSlides.length < 2;
+    activeVideo = null;
+    paused = reducedMotion.matches || originalSlides.length < 2;
+    pauseTemporarily();
+    activePlayButton?.focus({ preventScroll: true });
+    activePlayButton = null;
+    carousel.scrollLeft = 0;
+  };
+
+  cinemaPlayer?.addEventListener('click', (event) => {
+    if (event.target === cinemaPlayer) closeCinema();
+  });
+  cinemaPlayer?.addEventListener('keydown', (event) => {
+    if (event instanceof KeyboardEvent && event.key === 'Escape') {
+      event.preventDefault();
+      closeCinema();
+    }
+  });
+  cinemaClose?.addEventListener('click', () => {
+    closeCinema();
+  });
+  cinemaToggle?.addEventListener('click', () => {
+    if (!(cinemaVideo instanceof HTMLVideoElement)) return;
+    if (cinemaVideo.paused) {
+      cinemaVideo.play().catch((error) => {
+        if (cinemaStatus instanceof HTMLElement) {
+          cinemaStatus.textContent = `Não foi possível reproduzir o vídeo. ${
+            error instanceof Error ? error.message : 'Tente novamente.'
+          }`;
+        }
+      });
+    } else {
+      cinemaVideo.pause();
+    }
+    updateCinemaPlaybackControl();
+  });
+  cinemaMute?.addEventListener('click', () => {
+    if (!(cinemaVideo instanceof HTMLVideoElement) || !(cinemaMute instanceof HTMLButtonElement)) return;
+    cinemaVideo.muted = !cinemaVideo.muted;
+    cinemaMute.textContent = cinemaVideo.muted ? '♪' : '♫';
+    cinemaMute.setAttribute('aria-label', cinemaVideo.muted ? 'Ativar som do vídeo' : 'Silenciar vídeo');
+  });
+  cinemaSeek?.addEventListener('input', () => {
+    if (!(cinemaVideo instanceof HTMLVideoElement) || !Number.isFinite(cinemaVideo.duration)) return;
+    cinemaVideo.currentTime = (Number(cinemaSeek.value) / 1000) * cinemaVideo.duration;
+  });
+  cinemaVideo?.addEventListener('loadedmetadata', () => {
+    if (cinemaDuration instanceof HTMLElement && cinemaVideo instanceof HTMLVideoElement) {
+      cinemaDuration.textContent = formatTime(cinemaVideo.duration);
+    }
+  });
+  cinemaVideo?.addEventListener('timeupdate', () => {
+    if (
+      !(cinemaVideo instanceof HTMLVideoElement) ||
+      !(cinemaSeek instanceof HTMLInputElement) ||
+      !(cinemaCurrent instanceof HTMLElement)
+    ) {
+      return;
+    }
+    cinemaCurrent.textContent = formatTime(cinemaVideo.currentTime);
+    if (Number.isFinite(cinemaVideo.duration) && cinemaVideo.duration > 0) {
+      cinemaSeek.value = Math.round((cinemaVideo.currentTime / cinemaVideo.duration) * 1000).toString();
+    }
+  });
+  cinemaVideo?.addEventListener('play', updateCinemaPlaybackControl);
+  cinemaVideo?.addEventListener('pause', updateCinemaPlaybackControl);
+  cinemaVideo?.addEventListener('ended', closeCinema);
+  cinemaVideo?.addEventListener('error', () => {
+    if (cinemaStatus instanceof HTMLElement) cinemaStatus.textContent = 'Não foi possível carregar este vídeo. Feche e tente novamente.';
+  });
+  cinemaPlayer?.addEventListener('keydown', (event) => {
+    if (
+      event instanceof KeyboardEvent &&
+      event.code === 'Space' &&
+      !(event.target instanceof HTMLButtonElement) &&
+      !(event.target instanceof HTMLInputElement) &&
+      cinemaVideo instanceof HTMLVideoElement
+    ) {
+      event.preventDefault();
+      if (cinemaVideo.paused) {
+        cinemaVideo.play().catch((error) => {
+          if (cinemaStatus instanceof HTMLElement) {
+            cinemaStatus.textContent = `Não foi possível reproduzir o vídeo. ${
+              error instanceof Error ? error.message : 'Tente novamente.'
+            }`;
+          }
+        });
+      } else {
+        cinemaVideo.pause();
+      }
+    }
+  });
+
   carousel.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -391,18 +557,7 @@ const mountCarousel = async () => {
     const video = playButton.parentElement?.querySelector('video');
     if (!(video instanceof HTMLVideoElement)) return;
 
-    stopActiveVideo();
-    activeVideo = video;
-    paused = true;
-    window.clearTimeout(resumeTimer);
-    message.textContent = carouselMessage;
-    message.dataset.state = carouselMessageState;
-    video.controls = true;
-    video.parentElement?.classList.add('is-playing');
-    playButton.hidden = true;
-    video.play().catch((error) => {
-      failVideo(video, error instanceof Error ? error.message : 'Tente novamente.');
-    });
+    openCinema(video, playButton);
   });
 
   const animate = (timestamp) => {
@@ -454,7 +609,12 @@ const mountCarousel = async () => {
   });
 
   carousel.addEventListener('pointerdown', (event) => {
-    if (event.target instanceof Element && event.target.closest('.carousel__controls, [data-video-play], video')) return;
+    if (
+      event.target instanceof Element &&
+      event.target.closest('.carousel__controls, [data-video-play], video, [data-cinema-player]')
+    ) {
+      return;
+    }
     if (originalSlides.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return;
     dragging = true;
     paused = true;
