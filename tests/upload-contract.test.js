@@ -114,6 +114,17 @@ describe('live infinite album carousel', () => {
     expect(script).not.toContain('originals.map(cloneSlide)');
     expect(script).not.toContain('refreshedOriginals.map(cloneSlide)');
   });
+
+  it('puts photos first with wider slides, compact side controls, and a lighter caption', async () => {
+    const styles = await readProjectFile('src/styles/carrusel.css');
+
+    expect(styles).toContain('flex: 0 0 min(76vw, 1080px)');
+    expect(styles).toContain('flex-basis: min(94vw, 680px)');
+    expect(styles).toContain('inset: 50% 1rem auto');
+    expect(styles).toContain('width: 2.5rem;');
+    expect(styles).toContain('bottom: clamp(2rem, 7vh, 4rem)');
+    expect(styles).toContain('background: linear-gradient(110deg, rgb(9 12 19 / 72%), rgb(18 15 23 / 22%))');
+  });
 });
 
 describe('Netlify deployment', () => {
