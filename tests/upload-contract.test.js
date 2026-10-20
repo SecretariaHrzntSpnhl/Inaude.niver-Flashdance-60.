@@ -91,6 +91,9 @@ describe('private album moderation', () => {
     expect(script).toContain('/auth/v1/token?grant_type=password');
     expect(script).toContain('sessionStorage');
     expect(script).toContain('/rest/v1/rpc/is_album_admin');
+    expect(script).toContain("download.textContent = 'Baixar arquivo'");
+    expect(script).toContain('link.download = item.name');
+    expect(script).toContain('URL.createObjectURL(await response.blob())');
     expect(script).toContain("method: 'DELETE'");
     expect(policies).toContain('to authenticated');
     expect(policies).toContain('create or replace function public.is_album_admin()');

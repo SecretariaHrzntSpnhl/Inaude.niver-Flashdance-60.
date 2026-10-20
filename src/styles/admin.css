@@ -58,7 +58,8 @@
 .admin-login input:focus-visible,
 .admin-login button:focus-visible,
 .admin-logout:focus-visible,
-.admin-card__remove:focus-visible {
+.admin-card__remove:focus-visible,
+.admin-card__download:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
 }
@@ -162,9 +163,15 @@
   font-size: 0.78rem;
 }
 
+.admin-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.45rem;
+}
+
 .admin-card__remove {
   min-height: 2.6rem;
-  margin-top: 0.45rem;
   border: 1px solid rgb(255 150 143 / 60%);
   color: #ffd5d1;
   background: rgb(120 24 28 / 38%);
@@ -172,8 +179,26 @@
   cursor: pointer;
 }
 
+.admin-card__download {
+  min-height: 2.6rem;
+  border: 1px solid rgb(212 168 87 / 58%);
+  color: var(--color-cream);
+  background: rgb(212 168 87 / 10%);
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-card__download:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .admin-card__remove:hover:not(:disabled) {
   background: rgb(160 31 36 / 60%);
+}
+
+.admin-card__download:hover:not(:disabled) {
+  background: rgb(212 168 87 / 22%);
 }
 
 [hidden] {

@@ -28,7 +28,7 @@ O envio aceita até 10 arquivos por vez: JPG, PNG, WebP, GIF, HEIC/HEIF, MP4, MO
 
 ## Moderação privada do álbum
 
-O painel `/admin.html` exige uma conta de autenticação do Supabase e políticas de Storage que autorizam listar e excluir arquivos apenas para usuários explicitamente cadastrados como moderadores. A URL não é secreta nem substitui essas políticas. Convidados continuam podendo listar e enviar pelo fluxo público, mas não podem usar esse painel para moderar.
+O painel `/admin.html` exige uma conta de autenticação do Supabase e políticas de Storage que autorizam listar, baixar e excluir arquivos apenas para usuários explicitamente cadastrados como moderadores. A URL não é secreta nem substitui essas políticas. Convidados continuam podendo listar e enviar pelo fluxo público, mas não podem usar esse painel para moderar.
 
 Para configurar a conta administradora:
 

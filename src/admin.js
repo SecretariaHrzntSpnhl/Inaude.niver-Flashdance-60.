@@ -163,6 +163,38 @@ const renderFiles = (files, session) => {
     size.textContent = `${item.isVideo ? 'Vídeo' : 'Foto'}${item.size ? ` · ${formatSize(item.size)}` : ''}`;
     details.append(title, date, size);
 
+    const actions = document.createElement('div');
+    actions.className = 'admin-card__actions';
+
+    const download = document.createElement('button');
+    download.className = 'admin-card__download';
+    download.type = 'button';
+    download.textContent = 'Baixar arquivo';
+    download.setAttribute('aria-label', `Baixar arquivo de ${item.author || 'esta lembrança'}`);
+    download.addEventListener('click', async () => {
+      download.disabled = true;
+      feedback.textContent = `Preparando o download de ${item.author || 'esta lembrança'}…`;
+      feedback.dataset.state = '';
+      try {
+        const response = await fetch(item.url);
+        if (!response.ok) throw await formatError(response);
+        const fileUrl = URL.createObjectURL(await response.blob());
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.download = item.name;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(fileUrl), 60_000);
+        feedback.textContent = 'Download iniciado.';
+        feedback.dataset.state = 'success';
+      } catch (error) {
+        showError(error, 'Não foi possível baixar este arquivo.');
+      } finally {
+        download.disabled = false;
+      }
+    });
+
     const remove = document.createElement('button');
     remove.className = 'admin-card__remove';
     remove.type = 'button';
@@ -191,7 +223,8 @@ const renderFiles = (files, session) => {
         showError(error, 'Não foi possível remover esta lembrança.');
       }
     });
-    details.append(remove);
+    actions.append(download, remove);
+    details.append(actions);
     card.append(details);
     grid.append(card);
   });
