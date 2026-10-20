@@ -159,6 +159,10 @@ a:focus-visible {
   text-transform: none;
 }
 
+.wordmark__initial {
+  font-family: var(--font-body);
+}
+
 .header-link {
   color: rgb(245 240 232 / 76%);
   text-decoration: none;
