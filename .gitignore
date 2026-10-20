@@ -3,5 +3,6 @@ dist/
 .env
 .env.*
 !.env.example
+.tsupgrader/runtime-validation/standalone-result.json
 .DS_Store
 Thumbs.db
