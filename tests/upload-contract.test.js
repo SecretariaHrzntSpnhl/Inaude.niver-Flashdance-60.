@@ -96,6 +96,7 @@ describe('private album moderation', () => {
     expect(script).toContain('URL.createObjectURL(await response.blob())');
     expect(script).toContain("method: 'DELETE'");
     expect(policies).toContain('to authenticated');
+    expect(policies).toContain('alter table private.album_admins enable row level security');
     expect(policies).toContain('create or replace function public.is_album_admin()');
     expect(policies).toContain('(select private.is_album_admin())');
     expect(policies).toContain('for delete');

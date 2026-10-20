@@ -6,6 +6,8 @@ create table if not exists private.album_admins (
   user_id uuid primary key references auth.users (id) on delete cascade
 );
 
+alter table private.album_admins enable row level security;
+
 revoke all on table private.album_admins from public, anon, authenticated;
 
 create or replace function private.is_album_admin()
