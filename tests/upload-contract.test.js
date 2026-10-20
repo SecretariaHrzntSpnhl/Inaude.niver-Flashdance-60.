@@ -64,4 +64,39 @@ describe('Netlify deployment', () => {
     expect(config).toMatch(/VITE_SUPABASE_URL\s*=/);
     expect(config).toMatch(/VITE_SUPABASE_ANON_KEY\s*=/);
   });
+
+  it('builds a separate private moderation page without exposing an admin link publicly', async () => {
+    const config = await readProjectFile('vite.config.js');
+    const admin = await readProjectFile('admin.html');
+    const publicPages = await Promise.all([
+      readProjectFile('index.html'),
+      readProjectFile('upload.html'),
+      readProjectFile('galeria.html')
+    ]);
+
+    expect(config).toContain("admin: resolve(root, 'admin.html')");
+    expect(admin).toContain('data-admin-login');
+    expect(admin).toContain('data-admin-dashboard');
+    expect(admin).toContain('noindex, nofollow');
+    publicPages.forEach((html) => expect(html).not.toContain('/admin.html'));
+  });
+});
+
+describe('private album moderation', () => {
+  it('requires an authenticated session to list and delete files', async () => {
+    const script = await readProjectFile('src/admin.js');
+    const policies = await readProjectFile('supabase/admin.sql');
+    const readme = await readProjectFile('README.md');
+
+    expect(script).toContain('/auth/v1/token?grant_type=password');
+    expect(script).toContain('sessionStorage');
+    expect(script).toContain('/rest/v1/rpc/is_album_admin');
+    expect(script).toContain("method: 'DELETE'");
+    expect(policies).toContain('to authenticated');
+    expect(policies).toContain('create or replace function public.is_album_admin()');
+    expect(policies).toContain('(select private.is_album_admin())');
+    expect(policies).toContain('for delete');
+    expect(policies).not.toMatch(/for delete[\s\S]*?to anon/);
+    expect(readme).toContain('não habilite o cadastro público');
+  });
 });

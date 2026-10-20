@@ -10,7 +10,8 @@ export default defineConfig({
       input: {
         main: resolve(root, 'index.html'),
         upload: resolve(root, 'upload.html'),
-        gallery: resolve(root, 'galeria.html')
+        gallery: resolve(root, 'galeria.html'),
+        admin: resolve(root, 'admin.html')
       }
     }
   }

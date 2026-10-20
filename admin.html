@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Painel privado para revisar e moderar as lembranças do álbum de Inaude." />
+    <title>Moderação privada | Parabéns, Inaude</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="site-frame">
+      <header class="site-header">
+        <a class="wordmark" href="/" aria-label="Voltar para a página inicial">
+          <span class="wordmark__number">60</span>
+          <span class="wordmark__name">Inaude Jr.</span>
+        </a>
+        <a class="header-link" href="/galeria.html">Ver álbum público</a>
+      </header>
+
+      <main class="admin-shell">
+        <section class="admin-intro">
+          <p class="eyebrow"><span class="eyebrow__line"></span> Área privada <span class="eyebrow__line"></span></p>
+          <h1>Moderação do álbum</h1>
+          <p>Revise as lembranças compartilhadas e remova somente o conteúdo solicitado.</p>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="admin-heading">
+          <h2 id="admin-heading" class="visually-hidden">Acesso de administradora</h2>
+          <form class="admin-login" data-admin-login>
+            <label>
+              E-mail da administradora
+              <input name="email" type="email" autocomplete="username" required />
+            </label>
+            <label>
+              Senha
+              <input name="password" type="password" autocomplete="current-password" required />
+            </label>
+            <button class="button button--gold" type="submit">Entrar na moderação</button>
+          </form>
+
+          <div class="admin-dashboard" data-admin-dashboard hidden>
+            <div class="admin-dashboard__toolbar">
+              <p class="admin-account" data-admin-account></p>
+              <button class="admin-logout" type="button" data-admin-logout>Sair</button>
+            </div>
+            <p class="admin-status" data-admin-status role="status" aria-live="polite"></p>
+            <div class="admin-grid" data-admin-grid></div>
+          </div>
+          <p class="admin-feedback" data-admin-feedback role="status" aria-live="polite"></p>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/admin.js"></script>
+  </body>
+</html>
