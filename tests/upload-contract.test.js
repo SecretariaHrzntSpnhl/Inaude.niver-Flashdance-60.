@@ -10,12 +10,17 @@ describe('guest photo upload', () => {
     const pages = await Promise.all(
       ['index.html', 'upload.html', 'galeria.html', 'admin.html'].map(readProjectFile)
     );
+    const styles = await readProjectFile('src/styles/base.css');
 
     expect(pages[0]).toContain('<title>Parabéns, Inaude Jr. — Colorado desde 1966</title>');
     expect(pages[0]).toContain('<span>Inaude Jr.</span>');
     expect(pages[0]).not.toContain('<span>Inaude</span>');
     pages.slice(1).forEach((html) => expect(html).toContain('Inaude Jr.'));
     pages.forEach((html) => expect(html).not.toMatch(/Parabéns, Inaude(?:\s*[—<])/));
+    expect(styles).toContain('font-family: var(--font-display)');
+    expect(styles).toContain('letter-spacing: 0.015em');
+    expect(styles).toContain('text-transform: none');
+    expect(styles).toContain('font-size: 0.82rem');
   });
 
   it('lets guests choose multiple images without forcing camera capture', async () => {
