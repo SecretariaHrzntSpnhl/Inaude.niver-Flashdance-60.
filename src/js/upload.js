@@ -25,7 +25,7 @@ const mountUpload = () => {
   const fileList = document.querySelector('[data-upload-files]');
   const uploadLabel = document.querySelector('[data-upload-label]');
   const submitButton = document.querySelector('[data-upload-submit]');
-  const successPanel = document.querySelector('[data-upload-success]');
+  const successDialog = document.querySelector('[data-upload-success]');
   const successMessage = document.querySelector('[data-upload-success-message]');
   const successLink = document.querySelector('[data-upload-success-link]');
 
@@ -37,7 +37,7 @@ const mountUpload = () => {
     !(fileList instanceof HTMLElement) ||
     !(uploadLabel instanceof HTMLElement) ||
     !(submitButton instanceof HTMLButtonElement) ||
-    !(successPanel instanceof HTMLElement) ||
+    !(successDialog instanceof HTMLDialogElement) ||
     !(successMessage instanceof HTMLElement) ||
     !(successLink instanceof HTMLAnchorElement)
   ) {
@@ -213,17 +213,19 @@ const mountUpload = () => {
     updateSubmitButton();
     let completed = 0;
     let processed = 0;
+    let lastUploadedName = '';
     const failures = [];
     const selected = [...queue];
 
     for (const item of selected) {
       setStatus(`Enviando ${processed + 1} de ${selected.length}: ${item.file.name}`);
       try {
-        await uploadAlbumFile(item.file, authorInput.value.trim(), (progress) => {
+        const uploadedItem = await uploadAlbumFile(item.file, authorInput.value.trim(), (progress) => {
           item.progress = progress;
           const bar = [...fileList.querySelectorAll('progress')][queue.indexOf(item)];
           if (bar) bar.value = progress;
         });
+        lastUploadedName = uploadedItem.name;
         URL.revokeObjectURL(item.previewUrl);
         queue.splice(queue.indexOf(item), 1);
         completed += 1;
@@ -240,7 +242,9 @@ const mountUpload = () => {
     if (completed && !failures.length) {
       form.reset();
       renderQueue();
-      const returnUrl = new URL(`/?album-enviado=${completed}#album`, window.location.origin);
+      const returnUrl = new URL('/#album', window.location.origin);
+      returnUrl.searchParams.set('album-enviado', completed.toString());
+      if (lastUploadedName) returnUrl.searchParams.set('album-item', lastUploadedName);
       successMessage.textContent =
         completed === 1
           ? 'Sua lembrança já faz parte do álbum coletivo. Muito obrigado por compartilhar!'
@@ -250,8 +254,8 @@ const mountUpload = () => {
       dropzone.hidden = true;
       const privacyNote = document.querySelector('.upload-privacy-note');
       if (privacyNote instanceof HTMLElement) privacyNote.hidden = true;
-      successPanel.hidden = false;
-      window.setTimeout(() => window.location.assign(returnUrl.href), 5000);
+      successDialog.showModal();
+      window.setTimeout(() => window.location.assign(returnUrl.href), 4500);
       return;
     }
     if (completed) {

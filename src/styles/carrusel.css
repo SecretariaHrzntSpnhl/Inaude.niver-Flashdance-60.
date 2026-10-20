@@ -199,7 +199,7 @@
 .slide {
   position: relative;
   display: block;
-  flex: 0 0 min(86vw, 1180px);
+  flex: 0 0 min(48vw, 660px);
   height: 100%;
   min-height: 0;
   background: #100d12;
@@ -224,6 +224,39 @@
 
 .slide__media img {
   pointer-events: none;
+}
+
+.slide__media::before {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  background: linear-gradient(
+    112deg,
+    transparent 22%,
+    rgb(255 255 255 / 0%) 40%,
+    rgb(255 255 255 / 34%) 50%,
+    rgb(213 231 255 / 12%) 55%,
+    transparent 72%
+  );
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slide.is-arriving .slide__media::before {
+  animation: photo-light-sweep 1100ms ease-out both;
+}
+
+.slide.is-arriving[data-transition="focus"] .slide__media img {
+  animation: photo-focus-in 1050ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.slide.is-arriving[data-transition="silver"] .slide__media img {
+  animation: photo-silver-in 1050ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.slide.is-arriving[data-transition="warm"] .slide__media img {
+  animation: photo-warm-in 1050ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .slide__media video {
@@ -564,7 +597,7 @@
   }
 
   .slide {
-    flex-basis: min(90vw, 680px);
+    flex-basis: min(78vw, 520px);
     min-height: 0;
     height: 100%;
     background: #1a1010;
@@ -659,7 +692,7 @@
 
 @media (max-width: 380px) {
   .slide {
-    flex-basis: 88vw;
+    flex-basis: 84vw;
     min-height: 64svh;
   }
 
@@ -697,8 +730,65 @@
     animation: none;
   }
 
+  .slide.is-arriving .slide__media::before,
+  .slide.is-arriving .slide__media img {
+    animation: none;
+  }
+
   .carousel-overlay > .button::before {
     animation: none;
+  }
+}
+
+@keyframes photo-focus-in {
+  from {
+    filter: saturate(0.62) contrast(0.92) brightness(0.72) blur(7px);
+    transform: scale(1.12);
+  }
+
+  to {
+    filter: saturate(1.08) contrast(1.05) brightness(0.9) blur(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes photo-silver-in {
+  from {
+    filter: saturate(0.75) contrast(0.96) brightness(1.32);
+    transform: perspective(1200px) rotateY(-12deg) scale(1.06);
+  }
+
+  to {
+    filter: saturate(1.08) contrast(1.05) brightness(0.9);
+    transform: perspective(1200px) rotateY(0) scale(1);
+  }
+}
+
+@keyframes photo-warm-in {
+  from {
+    filter: saturate(1.7) contrast(1.15) brightness(0.65) sepia(0.5);
+    transform: scale(1.08);
+  }
+
+  to {
+    filter: saturate(1.08) contrast(1.05) brightness(0.9) sepia(0);
+    transform: scale(1);
+  }
+}
+
+@keyframes photo-light-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-110%);
+  }
+
+  32% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(110%);
   }
 }
 

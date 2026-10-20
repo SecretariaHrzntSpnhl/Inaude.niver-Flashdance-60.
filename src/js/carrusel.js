@@ -34,11 +34,13 @@ const previewSlides = [
     isPreview: true
   }
 ];
+const PHOTO_TRANSITIONS = ['focus', 'silver', 'warm'];
 
 const createSlide = (item, index) => {
   const article = document.createElement('article');
   article.className = 'slide';
   article.dataset.slideIndex = index.toString();
+  article.dataset.slideKey = item.name ?? item.url;
 
   const media = document.createElement('div');
   media.className = 'slide__media';
@@ -123,7 +125,7 @@ const mountCarousel = async () => {
     originalSlides = previewSlides;
     previewMessage = 'O álbum espera pelas primeiras fotos. Abaixo, uma prévia com imagens ilustrativas.';
   }
-  const isPreview = originalSlides === previewSlides;
+  let isPreview = originalSlides === previewSlides;
 
   const track = carousel.querySelector('[data-carousel-track]');
   if (!(track instanceof HTMLElement)) return;
@@ -132,6 +134,8 @@ const mountCarousel = async () => {
   const nextButton = carousel.querySelector('[data-carousel-next]');
   const prevButton = carousel.querySelector('[data-carousel-prev]');
   const hint = carousel.parentElement?.querySelector('[data-carousel-hint]');
+  const uploadParams = new URLSearchParams(window.location.search);
+  const uploadedItemName = uploadParams.get('album-item');
 
   const originals = originalSlides.map((slide, index) => createSlide(slide, index));
   const cloneSlide = (slide) => {
@@ -165,7 +169,7 @@ const mountCarousel = async () => {
   carousel.hidden = false;
   empty.hidden = true;
   message.textContent = isPreview ? previewMessage : `${originalSlides.length} lembrança(s) da festa.`;
-  const uploadedCount = Number(new URLSearchParams(window.location.search).get('album-enviado'));
+  const uploadedCount = Number(uploadParams.get('album-enviado'));
   if (Number.isInteger(uploadedCount) && uploadedCount > 0) {
     message.textContent =
       uploadedCount === 1
@@ -180,7 +184,7 @@ const mountCarousel = async () => {
   const carouselMessageState = message.dataset.state;
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const videos = [...track.querySelectorAll('video')];
+  let videos = [...track.querySelectorAll('video')];
   let offset = 0;
   let lastFrame = 0;
   let dragging = false;
@@ -191,9 +195,17 @@ const mountCarousel = async () => {
   let pageTurnTimer = 0;
   let activeVideo = null;
   let lastRenderedIndex = -1;
+  let lastTransition = '';
+  let refreshRunning = false;
 
   const getSlideWidth = () => track.children[0]?.getBoundingClientRect().width ?? 0;
   const getCycleWidth = () => getSlideWidth() * originalSlides.length;
+  const getCenteredTrackIndex = () => {
+    const slideWidth = getSlideWidth();
+    return slideWidth ? Math.floor((carousel.clientWidth / 2 - offset) / slideWidth) : 1;
+  };
+  const getCurrentIndex = () =>
+    ((getCenteredTrackIndex() - 1) % originalSlides.length + originalSlides.length) % originalSlides.length;
 
   const normalizeOffset = (value) => {
     const cycleWidth = getCycleWidth();
@@ -204,11 +216,21 @@ const mountCarousel = async () => {
   const render = () => {
     track.style.transform = `translate3d(${offset}px, 0, 0)`;
 
+    const centeredTrackIndex = getCenteredTrackIndex();
+    const currentIndex = getCurrentIndex();
+    if (currentIndex !== lastRenderedIndex) {
+      track.querySelector('.slide.is-arriving')?.classList.remove('is-arriving');
+      const activeSlide = track.children[centeredTrackIndex];
+      if (activeSlide instanceof HTMLElement) {
+        const transitions = PHOTO_TRANSITIONS.filter((transition) => transition !== lastTransition);
+        lastTransition = transitions[Math.floor(Math.random() * transitions.length)] ?? PHOTO_TRANSITIONS[0];
+        activeSlide.dataset.transition = lastTransition;
+        void activeSlide.offsetWidth;
+        activeSlide.classList.add('is-arriving');
+      }
+    }
+
     if (dots instanceof HTMLElement) {
-      const slideWidth = getSlideWidth();
-      const currentIndex = slideWidth
-        ? (Math.round(Math.abs(offset) / slideWidth) - 1 + originalSlides.length) % originalSlides.length
-        : 0;
       if (currentIndex !== lastRenderedIndex) {
         [...dots.children].forEach((dot, index) => {
           dot.classList.toggle('is-active', index === currentIndex);
@@ -217,9 +239,9 @@ const mountCarousel = async () => {
             else dot.removeAttribute('aria-current');
           }
         });
-        lastRenderedIndex = currentIndex;
       }
     }
+    lastRenderedIndex = currentIndex;
   };
 
   const pauseTemporarily = () => {
@@ -260,10 +282,106 @@ const mountCarousel = async () => {
     message.dataset.state = 'error';
   };
 
-  videos.forEach((video) => {
-    video.addEventListener('ended', () => finishVideo(video));
-    video.addEventListener('error', () => failVideo(video, 'Toque no botão para tentar novamente.'));
-  });
+  const bindVideoEvents = () => {
+    videos = [...track.querySelectorAll('video')];
+    videos.forEach((video) => {
+      video.addEventListener('ended', () => finishVideo(video));
+      video.addEventListener('error', () => failVideo(video, 'Toque no botão para tentar novamente.'));
+    });
+  };
+  bindVideoEvents();
+
+  const centerSlide = (index) => {
+    const slideWidth = getSlideWidth();
+    offset = slideWidth
+      ? carousel.clientWidth / 2 - (index + 1) * slideWidth - slideWidth / 2
+      : 0;
+    offset = normalizeOffset(offset);
+  };
+
+  const refreshAlbum = async () => {
+    if (!isAlbumConfigured || refreshRunning || document.hidden) return;
+    refreshRunning = true;
+    try {
+      const latestSlides = await listAlbumItems(Number.POSITIVE_INFINITY);
+      if (!latestSlides.length && isPreview) {
+        if (previewIsError) {
+          previewIsError = false;
+          previewMessage = 'O álbum espera pelas primeiras fotos. Abaixo, uma prévia com imagens ilustrativas.';
+          message.textContent = previewMessage;
+          message.dataset.state = '';
+        }
+        return;
+      }
+      const unchanged =
+        !isPreview &&
+        latestSlides.length === originalSlides.length &&
+        latestSlides.every((slide, index) => slide.name === originalSlides[index].name);
+      if (unchanged) {
+        if (message.dataset.state === 'error') {
+          message.textContent = `${originalSlides.length} lembrança(s) da festa.`;
+          message.dataset.state = '';
+        }
+        return;
+      }
+
+      const currentKey = track.children[getCenteredTrackIndex()]?.dataset.slideKey;
+      const currentKeyIndex = latestSlides.findIndex((slide) => slide.name === currentKey);
+      stopActiveVideo();
+      originalSlides = latestSlides.length ? latestSlides : previewSlides;
+      isPreview = originalSlides === previewSlides;
+      previewIsError = false;
+      previewMessage = 'O álbum espera pelas primeiras fotos. Abaixo, uma prévia com imagens ilustrativas.';
+
+      const refreshedOriginals = originalSlides.map((slide, index) => createSlide(slide, index));
+      track.replaceChildren(
+        cloneSlide(refreshedOriginals[refreshedOriginals.length - 1]),
+        ...refreshedOriginals,
+        ...refreshedOriginals.map(cloneSlide)
+      );
+
+      if (dots instanceof HTMLElement) {
+        dots.replaceChildren();
+        if (originalSlides.length <= 12) {
+          originalSlides.forEach((_, index) => {
+            const dot = document.createElement('button');
+            dot.className = `carousel__dot${index === 0 ? ' is-active' : ''}`;
+            dot.type = 'button';
+            dot.setAttribute('aria-label', `Ir para a lembrança ${index + 1}`);
+            dot.dataset.dotIndex = index.toString();
+            dots.append(dot);
+          });
+        }
+        dots.hidden = originalSlides.length < 2 || originalSlides.length > 12;
+      }
+      if (hint instanceof HTMLElement) hint.hidden = originalSlides.length < 2;
+      if (nextButton instanceof HTMLButtonElement) nextButton.hidden = originalSlides.length < 2;
+      if (prevButton instanceof HTMLButtonElement) prevButton.hidden = originalSlides.length < 2;
+
+      message.textContent = isPreview ? previewMessage : `${originalSlides.length} lembrança(s) da festa.`;
+      message.dataset.state = '';
+      lastRenderedIndex = -1;
+      const requestedItemIndex = uploadedItemName
+        ? originalSlides.findIndex((slide) => slide.name === uploadedItemName)
+        : -1;
+      centerSlide(
+        requestedItemIndex >= 0
+          ? requestedItemIndex
+          : currentKeyIndex >= 0
+            ? currentKeyIndex
+            : 0
+      );
+      bindVideoEvents();
+      render();
+    } catch (error) {
+      message.textContent = `Não foi possível atualizar as lembranças. ${
+        error instanceof Error ? error.message : 'Tente novamente mais tarde.'
+      }`;
+      message.dataset.state = 'error';
+    } finally {
+      refreshRunning = false;
+    }
+  };
 
   carousel.addEventListener('click', (event) => {
     const target = event.target;
@@ -293,7 +411,7 @@ const mountCarousel = async () => {
     lastFrame = timestamp;
 
     if (!paused && !dragging && !document.hidden) {
-      offset = normalizeOffset(offset - elapsed * 0.024);
+      offset = normalizeOffset(offset - elapsed * 0.035);
       render();
     }
     window.requestAnimationFrame(animate);
@@ -310,8 +428,11 @@ const mountCarousel = async () => {
       carousel.classList.remove('is-page-turning-next', 'is-page-turning-prev');
     }, 680);
     const slideWidth = getSlideWidth();
-    const currentIndex = (Math.round(Math.abs(offset) / slideWidth) - 1 + originalSlides.length) % originalSlides.length;
-    offset = normalizeOffset(-(currentIndex + 1 + direction) * slideWidth);
+    const currentIndex = getCurrentIndex();
+    const targetIndex = (currentIndex + direction + originalSlides.length) % originalSlides.length;
+    offset = normalizeOffset(
+      carousel.clientWidth / 2 - (targetIndex + 1) * slideWidth - slideWidth / 2
+    );
     render();
   };
 
@@ -325,7 +446,10 @@ const mountCarousel = async () => {
     if (!Number.isInteger(index)) return;
     stopActiveVideo();
     pauseTemporarily();
-    offset = normalizeOffset(-(index + 1) * getSlideWidth());
+    const slideWidth = getSlideWidth();
+    offset = normalizeOffset(
+      carousel.clientWidth / 2 - (index + 1) * slideWidth - slideWidth / 2
+    );
     render();
   });
 
@@ -375,9 +499,18 @@ const mountCarousel = async () => {
     render();
   });
 
-  offset = -getSlideWidth();
+  const uploadedItemIndex = uploadedItemName
+    ? originalSlides.findIndex((slide) => slide.name === uploadedItemName)
+    : -1;
+  centerSlide(uploadedItemIndex >= 0 ? uploadedItemIndex : 0);
   render();
   window.requestAnimationFrame(animate);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) void refreshAlbum();
+  });
+  window.setInterval(() => {
+    void refreshAlbum();
+  }, 10000);
 };
 
 if (document.readyState === 'loading') {
