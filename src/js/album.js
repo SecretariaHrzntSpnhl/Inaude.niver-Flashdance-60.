@@ -4,6 +4,8 @@ const allowedTypes = new Map([
   ['image/png', 'png'],
   ['image/webp', 'webp'],
   ['image/gif', 'gif'],
+  ['image/heic', 'heic'],
+  ['image/heif', 'heif'],
   ['video/mp4', 'mp4'],
   ['video/quicktime', 'mov'],
   ['video/webm', 'webm']
