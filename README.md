@@ -1,4 +1,4 @@
-# Inaude 60
+# Inaude Jr. 60
 
 Landing e álbum colaborativo para celebrar os 60 anos de Inaude Jr.
 

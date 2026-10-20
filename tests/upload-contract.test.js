@@ -6,6 +6,18 @@ const readProjectFile = (fileName) =>
   readFile(new URL(`../${fileName}`, import.meta.url), 'utf8');
 
 describe('guest photo upload', () => {
+  it('uses the honoree name Inaude Jr. consistently across public and private pages', async () => {
+    const pages = await Promise.all(
+      ['index.html', 'upload.html', 'galeria.html', 'admin.html'].map(readProjectFile)
+    );
+
+    expect(pages[0]).toContain('<title>Parabéns, Inaude Jr. — Colorado desde 1966</title>');
+    expect(pages[0]).toContain('<span>Inaude Jr.</span>');
+    expect(pages[0]).not.toContain('<span>Inaude</span>');
+    pages.slice(1).forEach((html) => expect(html).toContain('Inaude Jr.'));
+    pages.forEach((html) => expect(html).not.toMatch(/Parabéns, Inaude(?:\s*[—<])/));
+  });
+
   it('lets guests choose multiple images without forcing camera capture', async () => {
     const html = await readProjectFile('upload.html');
     const input = html.match(/<input\s+class="upload-file-input"[\s\S]*?\/>/)?.[0];
