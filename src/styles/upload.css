@@ -55,6 +55,10 @@
   text-align: center;
 }
 
+.upload-success:not([open]) {
+  display: none;
+}
+
 .upload-success::backdrop {
   background: rgba(7, 5, 9, 0.78);
   backdrop-filter: blur(9px);

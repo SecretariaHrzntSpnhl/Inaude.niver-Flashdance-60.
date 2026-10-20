@@ -28,9 +28,11 @@ describe('guest photo upload', () => {
   it('shows an accessible thank-you modal before returning to the album', async () => {
     const html = await readProjectFile('upload.html');
     const script = await readProjectFile('src/js/upload.js');
+    const styles = await readProjectFile('src/styles/upload.css');
 
     expect(html).toMatch(/<dialog[^>]*data-upload-success[^>]*>/);
     expect(html).toContain('data-upload-success-link');
+    expect(styles).toMatch(/\.upload-success:not\(\[open\]\)\s*\{\s*display:\s*none;/);
     expect(script).toContain('successDialog.showModal()');
     expect(script).toContain('window.setTimeout(() => window.location.assign(returnUrl.href), 4500)');
     expect(script).toContain("returnUrl.searchParams.set('album-item', lastUploadedName)");
