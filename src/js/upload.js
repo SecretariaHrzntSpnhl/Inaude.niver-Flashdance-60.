@@ -32,7 +32,7 @@ const mountUpload = () => {
   if (
     !(form instanceof HTMLFormElement) ||
     !(status instanceof HTMLElement) ||
-    !(dropzone instanceof HTMLButtonElement) ||
+    !(dropzone instanceof HTMLLabelElement) ||
     !(fileInput instanceof HTMLInputElement) ||
     !(fileList instanceof HTMLElement) ||
     !(uploadLabel instanceof HTMLElement) ||
@@ -172,9 +172,6 @@ const mountUpload = () => {
     setStatus(messages.join(' '), invalid.length || !isAlbumConfigured ? 'error' : '');
   };
 
-  dropzone.addEventListener('click', () => {
-    if (!uploading) fileInput.click();
-  });
   fileInput.addEventListener('change', () => {
     addFiles(fileInput.files ?? []);
     fileInput.value = '';
@@ -209,7 +206,8 @@ const mountUpload = () => {
     }
 
     uploading = true;
-    dropzone.disabled = true;
+    fileInput.disabled = true;
+    dropzone.setAttribute('aria-disabled', 'true');
     updateSubmitButton();
     let completed = 0;
     let processed = 0;
@@ -237,7 +235,8 @@ const mountUpload = () => {
     }
 
     uploading = false;
-    dropzone.disabled = false;
+    fileInput.disabled = false;
+    dropzone.setAttribute('aria-disabled', 'false');
     updateSubmitButton();
     if (completed && !failures.length) {
       form.reset();

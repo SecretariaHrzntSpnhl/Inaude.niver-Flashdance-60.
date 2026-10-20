@@ -14,6 +14,8 @@ describe('guest photo upload', () => {
     expect(input).toContain('accept="image/*,video/mp4,video/quicktime,video/webm"');
     expect(input).toMatch(/\bmultiple\b/);
     expect(input).not.toMatch(/\bcapture\b/);
+    expect(html).toMatch(/<label[^>]*data-upload-zone[^>]*>[\s\S]*?<input[^>]*data-upload-input[\s\S]*?<\/label>/);
+    expect(await readProjectFile('src/js/upload.js')).not.toContain('fileInput.click()');
   });
 
   it('requires sharing consent before submission', async () => {
