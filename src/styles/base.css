@@ -159,7 +159,7 @@ a:focus-visible {
   text-transform: none;
 }
 
-.wordmark__initial {
+.wordmark__suffix {
   font-family: var(--font-body);
 }
 

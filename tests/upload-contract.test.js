@@ -13,15 +13,15 @@ describe('guest photo upload', () => {
     const styles = await readProjectFile('src/styles/base.css');
 
     expect(pages[0]).toContain('<title>Parabéns, Inaude Jr. — Colorado desde 1966</title>');
-    expect(pages[0]).toContain('<span class="wordmark__name">Inaude <span class="wordmark__initial">j</span>r.</span>');
+    expect(pages[0]).toContain('<span class="wordmark__name">Inaude j<span class="wordmark__suffix">r</span>.</span>');
     expect(pages[0]).not.toContain('<span>Inaude</span>');
     pages.forEach((html) =>
-      expect(html).toContain('<span class="wordmark__name">Inaude <span class="wordmark__initial">j</span>r.</span>')
+      expect(html).toContain('<span class="wordmark__name">Inaude j<span class="wordmark__suffix">r</span>.</span>')
     );
     pages.slice(1).forEach((html) => expect(html).toContain('Inaude Jr.'));
     pages.forEach((html) => expect(html).not.toMatch(/Parabéns, Inaude(?:\s*[—<])/));
     expect(styles).toContain('font-family: var(--font-display)');
-    expect(styles).toMatch(/\.wordmark__initial\s*\{\s*font-family:\s*var\(--font-body\);\s*\}/);
+    expect(styles).toMatch(/\.wordmark__suffix\s*\{\s*font-family:\s*var\(--font-body\);\s*\}/);
     expect(styles).toContain('letter-spacing: 0.015em');
     expect(styles).toContain('text-transform: none');
     expect(styles).toContain('font-size: 0.68rem');
