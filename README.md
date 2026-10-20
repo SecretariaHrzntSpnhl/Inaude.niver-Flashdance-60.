@@ -24,7 +24,7 @@ O envio e a galeria usam o Supabase Storage. Sem essa configuração, a página 
 
 4. Reinicie o servidor Vite.
 
-O envio aceita até 10 arquivos por vez: JPG, PNG, WebP, GIF, HEIC/HEIF, MP4, MOV e WebM. Em celulares, o seletor de fotos e vídeos abre a galeria do dispositivo; não força a abertura da câmera. Após o envio, as lembranças aparecem no carrossel da página inicial e na galeria do álbum. Os nomes informados aparecem no álbum. Como o álbum é público e o envio não exige conta, qualquer pessoa com acesso ao site pode ver e enviar lembranças; não coloque uma chave `service_role` no frontend. A tela pede confirmação de autorização antes de enviar.
+O envio aceita até 10 arquivos por vez: JPG, PNG, WebP, GIF, HEIC/HEIF, MP4, MOV e WebM. Em celulares, o seletor de fotos e vídeos abre a galeria do dispositivo; não força a abertura da câmera. Após o envio, as lembranças aparecem no carrossel da página inicial e na galeria do álbum. Ao voltar do envio, o carrossel começa pelas lembranças recém-enviadas e depois segue o ciclo contínuo do álbum; quando um vídeo termina, ele fecha sozinho e o carrossel continua do ponto em que parou. Os nomes informados aparecem no álbum. Como o álbum é público e o envio não exige conta, qualquer pessoa com acesso ao site pode ver e enviar lembranças; não coloque uma chave `service_role` no frontend. A tela pede confirmação de autorização antes de enviar.
 
 ## Moderação privada do álbum
 

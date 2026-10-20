@@ -87,6 +87,33 @@ describe('live infinite album carousel', () => {
     expect(`${html}${script}`).not.toMatch(/EN VIVO|AO VIVO/i);
     expect(styles).toContain('.cinema-player__stage');
   });
+
+  it('resumes the carousel in place and shows a newly uploaded batch before looping', async () => {
+    const script = await readProjectFile('src/js/carrusel.js');
+    const closeCinema = script.slice(
+      script.indexOf('const closeCinema = () =>'),
+      script.indexOf("cinemaPlayer?.addEventListener('click'")
+    );
+
+    expect(script).toContain('Math.max(0, uploadedItemIndex - uploadedCount + 1)');
+    expect(script).toContain('centerSlide(firstUploadedItemIndex >= 0 ? firstUploadedItemIndex : 0)');
+    expect(script).toContain('centerSlide(currentKeyIndex >= 0 ? currentKeyIndex : 0)');
+    expect(closeCinema).toContain('paused = reducedMotion.matches || originalSlides.length < 2');
+    expect(closeCinema).toContain('render()');
+    expect(closeCinema).not.toContain('pauseTemporarily()');
+    expect(closeCinema).not.toContain('centerSlide(');
+  });
+
+  it('keeps the infinite carousel lightweight by cloning only its edge slides', async () => {
+    const script = await readProjectFile('src/js/carrusel.js');
+
+    expect(script).toContain('const replaceSlides = (slides) =>');
+    expect(script).toContain('const leadingClone = cloneSlide(slides[slides.length - 1])');
+    expect(script).toContain('const trailingClone = cloneSlide(slides[0])');
+    expect(script).toContain('track.replaceChildren(leadingClone, ...slides, trailingClone)');
+    expect(script).not.toContain('originals.map(cloneSlide)');
+    expect(script).not.toContain('refreshedOriginals.map(cloneSlide)');
+  });
 });
 
 describe('Netlify deployment', () => {

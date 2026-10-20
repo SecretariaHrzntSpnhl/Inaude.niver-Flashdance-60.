@@ -152,6 +152,7 @@ const mountCarousel = async () => {
   const cinemaClose = cinemaPlayer?.querySelector('[data-cinema-close]');
   const uploadParams = new URLSearchParams(window.location.search);
   const uploadedItemName = uploadParams.get('album-item');
+  const uploadedCount = Number(uploadParams.get('album-enviado'));
 
   const originals = originalSlides.map((slide, index) => createSlide(slide, index));
   const cloneSlide = (slide) => {
@@ -159,9 +160,19 @@ const mountCarousel = async () => {
     clone.setAttribute('aria-hidden', 'true');
     return clone;
   };
-  const leadingClone = cloneSlide(originals[originals.length - 1]);
-  const clones = originals.map(cloneSlide);
-  track.replaceChildren(leadingClone, ...originals, ...clones);
+  const replaceSlides = (slides) => {
+    const leadingClone = cloneSlide(slides[slides.length - 1]);
+    const trailingClone = cloneSlide(slides[0]);
+    track.replaceChildren(leadingClone, ...slides, trailingClone);
+  };
+  replaceSlides(originals);
+  const uploadedItemIndex = uploadedItemName
+    ? originalSlides.findIndex((slide) => slide.name === uploadedItemName)
+    : -1;
+  const firstUploadedItemIndex =
+    Number.isInteger(uploadedCount) && uploadedCount > 0 && uploadedItemIndex >= 0
+      ? Math.max(0, uploadedItemIndex - uploadedCount + 1)
+      : uploadedItemIndex;
 
   if (dots instanceof HTMLElement) {
     dots.replaceChildren();
@@ -185,7 +196,6 @@ const mountCarousel = async () => {
   carousel.hidden = false;
   empty.hidden = true;
   message.textContent = isPreview ? previewMessage : `${originalSlides.length} lembrança(s) da festa.`;
-  const uploadedCount = Number(uploadParams.get('album-enviado'));
   if (Number.isInteger(uploadedCount) && uploadedCount > 0) {
     message.textContent =
       uploadedCount === 1
@@ -338,11 +348,7 @@ const mountCarousel = async () => {
       previewMessage = 'O álbum espera pelas primeiras fotos. Abaixo, uma prévia com imagens ilustrativas.';
 
       const refreshedOriginals = originalSlides.map((slide, index) => createSlide(slide, index));
-      track.replaceChildren(
-        cloneSlide(refreshedOriginals[refreshedOriginals.length - 1]),
-        ...refreshedOriginals,
-        ...refreshedOriginals.map(cloneSlide)
-      );
+      replaceSlides(refreshedOriginals);
 
       if (dots instanceof HTMLElement) {
         dots.replaceChildren();
@@ -365,16 +371,7 @@ const mountCarousel = async () => {
       message.textContent = isPreview ? previewMessage : `${originalSlides.length} lembrança(s) da festa.`;
       message.dataset.state = '';
       lastRenderedIndex = -1;
-      const requestedItemIndex = uploadedItemName
-        ? originalSlides.findIndex((slide) => slide.name === uploadedItemName)
-        : -1;
-      centerSlide(
-        requestedItemIndex >= 0
-          ? requestedItemIndex
-          : currentKeyIndex >= 0
-            ? currentKeyIndex
-            : 0
-      );
+      centerSlide(currentKeyIndex >= 0 ? currentKeyIndex : 0);
       render();
     } catch (error) {
       message.textContent = `Não foi possível atualizar as lembranças. ${
@@ -459,7 +456,7 @@ const mountCarousel = async () => {
     if (prevButton instanceof HTMLButtonElement) prevButton.disabled = originalSlides.length < 2;
     activeVideo = null;
     paused = reducedMotion.matches || originalSlides.length < 2;
-    pauseTemporarily();
+    render();
     activePlayButton?.focus({ preventScroll: true });
     activePlayButton = null;
     carousel.scrollLeft = 0;
@@ -659,10 +656,7 @@ const mountCarousel = async () => {
     render();
   });
 
-  const uploadedItemIndex = uploadedItemName
-    ? originalSlides.findIndex((slide) => slide.name === uploadedItemName)
-    : -1;
-  centerSlide(uploadedItemIndex >= 0 ? uploadedItemIndex : 0);
+  centerSlide(firstUploadedItemIndex >= 0 ? firstUploadedItemIndex : 0);
   render();
   window.requestAnimationFrame(animate);
   document.addEventListener('visibilitychange', () => {
