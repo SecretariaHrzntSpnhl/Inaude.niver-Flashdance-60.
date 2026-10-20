@@ -18,10 +18,10 @@ describe('guest photo upload', () => {
     pages.forEach((html) => expect(html).toContain('<span class="wordmark__name">Inaude jr.</span>'));
     pages.slice(1).forEach((html) => expect(html).toContain('Inaude Jr.'));
     pages.forEach((html) => expect(html).not.toMatch(/Parabéns, Inaude(?:\s*[—<])/));
-    expect(styles).toContain('font-family: var(--font-body)');
-    expect(styles).toContain('letter-spacing: 0.04em');
+    expect(styles).toContain('font-family: var(--font-display)');
+    expect(styles).toContain('letter-spacing: 0.015em');
     expect(styles).toContain('text-transform: none');
-    expect(styles).toContain('font-size: 0.58rem');
+    expect(styles).toContain('font-size: 0.68rem');
   });
 
   it('lets guests choose multiple images without forcing camera capture', async () => {
