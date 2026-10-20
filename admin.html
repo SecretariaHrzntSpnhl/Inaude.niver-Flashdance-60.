@@ -42,6 +42,20 @@
             <button class="button button--gold" type="submit">Entrar na moderação</button>
           </form>
 
+          <form class="admin-password" data-admin-password hidden>
+            <h2>Crie sua senha privada</h2>
+            <p>Escolha uma senha que só você conheça. Ela não será exibida nem salva neste site.</p>
+            <label>
+              Nova senha (mínimo de 12 caracteres)
+              <input name="password" type="password" autocomplete="new-password" minlength="12" required />
+            </label>
+            <label>
+              Confirme a nova senha
+              <input name="password-confirmation" type="password" autocomplete="new-password" minlength="12" required />
+            </label>
+            <button class="button button--gold" type="submit">Salvar minha senha</button>
+          </form>
+
           <div class="admin-dashboard" data-admin-dashboard hidden>
             <div class="admin-dashboard__toolbar">
               <p class="admin-account" data-admin-account></p>

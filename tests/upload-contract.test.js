@@ -76,6 +76,7 @@ describe('Netlify deployment', () => {
 
     expect(config).toContain("admin: resolve(root, 'admin.html')");
     expect(admin).toContain('data-admin-login');
+    expect(admin).toContain('data-admin-password');
     expect(admin).toContain('data-admin-dashboard');
     expect(admin).toContain('noindex, nofollow');
     publicPages.forEach((html) => expect(html).not.toContain('/admin.html'));
@@ -89,6 +90,10 @@ describe('private album moderation', () => {
     const readme = await readProjectFile('README.md');
 
     expect(script).toContain('/auth/v1/token?grant_type=password');
+    expect(script).toContain('takeAuthRedirectSession');
+    expect(script).toContain("['invite', 'recovery', 'signup'].includes(type)");
+    expect(script).toContain("method: 'PUT'");
+    expect(script).toContain('window.history.replaceState');
     expect(script).toContain('sessionStorage');
     expect(script).toContain('/rest/v1/rpc/is_album_admin');
     expect(script).toContain("download.textContent = 'Baixar arquivo'");

@@ -52,7 +52,8 @@ Para configurar a conta administradora:
    join auth.users as users on users.id = admins.user_id;
    ```
 
-5. Entre em `https://niver-inaude.netlify.app/admin.html` com essa conta. Antes de configurar a conta e executar o SQL, o painel não terá permissão para listar nem remover lembranças.
+5. Em **Authentication → URL Configuration**, configure o Site URL e a Redirect URL permitida como `https://niver-inaude.netlify.app/admin.html`, para que os convites retornem ao painel.
+6. Em **Authentication → Users**, envie o convite ou a confirmação para essa conta. Ao abrir o link no e-mail, o painel permite criar uma senha privada de pelo menos 12 caracteres. A senha é enviada diretamente ao Supabase e não é armazenada pelo site. Depois, entre em `https://niver-inaude.netlify.app/admin.html` com seu e-mail e a senha escolhida.
 
 A remoção apaga permanentemente o arquivo do Storage. O carrossel público detecta a mudança na próxima atualização automática. Nunca exponha uma chave `service_role` no site ou no Netlify.
 

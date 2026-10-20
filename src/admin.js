@@ -7,6 +7,7 @@ const publicKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const bucket = 'inaude-album';
 const sessionKey = 'inaude-admin-session';
 const loginForm = document.querySelector('[data-admin-login]');
+const passwordForm = document.querySelector('[data-admin-password]');
 const dashboard = document.querySelector('[data-admin-dashboard]');
 const feedback = document.querySelector('[data-admin-feedback]');
 const status = document.querySelector('[data-admin-status]');
@@ -55,6 +56,25 @@ const saveSession = (session) => {
     session.expires_at ??
     (session.expires_in ? Math.floor(Date.now() / 1000) + session.expires_in : undefined);
   sessionStorage.setItem(sessionKey, JSON.stringify({ ...session, expires_at: expiresAt }));
+};
+
+const takeAuthRedirectSession = () => {
+  if (!window.location.hash) return null;
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const type = params.get('type');
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+  if (!['invite', 'recovery', 'signup'].includes(type) || !accessToken || !refreshToken) return null;
+
+  const session = {
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    expires_in: Number(params.get('expires_in')) || 3600,
+    token_type: params.get('token_type') || 'bearer'
+  };
+  saveSession(session);
+  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+  return session;
 };
 
 const refreshSession = async (session) => {
@@ -273,6 +293,45 @@ const showDashboard = async (session) => {
   }
 };
 
+passwordForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const session = readSession();
+  if (!session) {
+    passwordForm.hidden = true;
+    loginForm.hidden = false;
+    showError(new Error('O link de configuração expirou ou já foi utilizado.'), 'Solicite uma nova mensagem de convite.');
+    return;
+  }
+
+  const formData = new FormData(passwordForm);
+  const password = formData.get('password');
+  const confirmation = formData.get('password-confirmation');
+  if (password !== confirmation) {
+    showError(new Error('As senhas informadas são diferentes.'), 'Confira a confirmação da senha.');
+    return;
+  }
+
+  const submit = passwordForm.querySelector('button[type="submit"]');
+  submit.disabled = true;
+  feedback.textContent = 'Salvando sua senha…';
+  feedback.dataset.state = '';
+  try {
+    session.user = await request('/auth/v1/user', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    }, session.access_token);
+    saveSession(session);
+    passwordForm.reset();
+    passwordForm.hidden = true;
+    await showDashboard(session);
+  } catch (error) {
+    showError(error, 'Não foi possível salvar a senha.');
+  } finally {
+    submit.disabled = false;
+  }
+});
+
 loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   const submit = loginForm.querySelector('button[type="submit"]');
@@ -320,13 +379,20 @@ if (!projectUrl || !publicKey) {
   loginForm.hidden = true;
   showError(new Error('O acesso ao álbum não está configurado.'), 'Painel indisponível.');
 } else {
-  const session = readSession();
-  if (session) {
-    getValidSession()
-      .then((validSession) => validSession && showDashboard(validSession))
-      .catch((error) => {
-        sessionStorage.removeItem(sessionKey);
-        showError(error, 'Sua sessão expirou. Entre novamente.');
-      });
+  const redirectedSession = takeAuthRedirectSession();
+  if (redirectedSession) {
+    loginForm.hidden = true;
+    passwordForm.hidden = false;
+    feedback.textContent = 'Convite confirmado. Crie a senha que só você usará para acessar este painel.';
+  } else {
+    const session = readSession();
+    if (session) {
+      getValidSession()
+        .then((validSession) => validSession && showDashboard(validSession))
+        .catch((error) => {
+          sessionStorage.removeItem(sessionKey);
+          showError(error, 'Sua sessão expirou. Entre novamente.');
+        });
+    }
   }
 }
