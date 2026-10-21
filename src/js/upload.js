@@ -22,6 +22,7 @@ const mountUpload = () => {
   const status = document.querySelector('[data-upload-status]');
   const dropzone = document.querySelector('[data-upload-zone]');
   const fileInput = document.querySelector('[data-upload-input]');
+  const pickerButton = document.querySelector('[data-upload-picker]');
   const fileList = document.querySelector('[data-upload-files]');
   const uploadLabel = document.querySelector('[data-upload-label]');
   const submitButton = document.querySelector('[data-upload-submit]');
@@ -32,8 +33,9 @@ const mountUpload = () => {
   if (
     !(form instanceof HTMLFormElement) ||
     !(status instanceof HTMLElement) ||
-    !(dropzone instanceof HTMLLabelElement) ||
+    !(dropzone instanceof HTMLElement) ||
     !(fileInput instanceof HTMLInputElement) ||
+    !(pickerButton instanceof HTMLButtonElement) ||
     !(fileList instanceof HTMLElement) ||
     !(uploadLabel instanceof HTMLElement) ||
     !(submitButton instanceof HTMLButtonElement) ||
@@ -177,6 +179,10 @@ const mountUpload = () => {
     fileInput.value = '';
   });
 
+  pickerButton.addEventListener('click', () => {
+    if (!uploading) fileInput.click();
+  });
+
   for (const eventName of ['dragenter', 'dragover']) {
     dropzone.addEventListener(eventName, (event) => {
       event.preventDefault();
@@ -207,6 +213,7 @@ const mountUpload = () => {
 
     uploading = true;
     fileInput.disabled = true;
+    pickerButton.disabled = true;
     dropzone.setAttribute('aria-disabled', 'true');
     updateSubmitButton();
     let completed = 0;
@@ -236,6 +243,7 @@ const mountUpload = () => {
 
     uploading = false;
     fileInput.disabled = false;
+    pickerButton.disabled = false;
     dropzone.setAttribute('aria-disabled', 'false');
     updateSubmitButton();
     if (completed && !failures.length) {

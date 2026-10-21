@@ -35,9 +35,11 @@
               <p class="upload-success__return">Voltando ao carrossel em alguns segundos para ver sua lembrança no álbum.</p>
               <a class="button button--gold upload-success__link" data-upload-success-link href="/#album">Voltar ao carrossel</a>
             </dialog>
-            <label class="upload-dropzone" data-upload-zone>
-              <span class="upload-dropzone__title" data-upload-label>Escolher fotos e vídeos</span>
-              <span class="upload-dropzone__hint">Toque aqui. Você pode escolher mais de um.</span>
+            <div class="upload-dropzone" data-upload-zone>
+              <button class="upload-picker-button" data-upload-picker type="button">
+                <span class="upload-dropzone__title" data-upload-label>Escolher fotos e vídeos</span>
+                <span class="upload-dropzone__hint">Toque aqui. Você pode escolher mais de um.</span>
+              </button>
               <input
                 class="upload-file-input"
                 data-upload-input
@@ -45,8 +47,10 @@
                 accept="image/*,video/mp4,video/quicktime,video/webm"
                 multiple
                 aria-label="Escolher fotos e vídeos"
+                aria-hidden="true"
+                tabindex="-1"
               />
-            </label>
+            </div>
 
             <form class="upload-form" data-upload-form>
               <div class="upload-field">
