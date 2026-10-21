@@ -13,6 +13,7 @@ describe('guest photo upload', () => {
     const styles = await readProjectFile('src/styles/base.css');
 
     expect(pages[0]).toContain('<title>Parabéns, Inaude Jr. — Colorado desde 1966</title>');
+    expect(pages[0]).not.toContain('Com carinho, para Inaude Jr.');
     expect(pages[0]).toContain('<span class="wordmark__name">Inaude j<span class="wordmark__suffix">r</span>.</span>');
     expect(pages[0]).not.toContain('<span>Inaude</span>');
     pages.forEach((html) =>
